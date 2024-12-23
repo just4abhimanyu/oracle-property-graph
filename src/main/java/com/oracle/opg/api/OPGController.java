@@ -1,8 +1,6 @@
 package com.oracle.opg.api;
 
-import com.oracle.opg.models.Bank;
-import com.oracle.opg.models.Person;
-import com.oracle.opg.models.Vertex;
+import com.oracle.opg.models.*;
 import com.oracle.opg.services.PropertyGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,5 +28,17 @@ public class OPGController {
     @GetMapping("/persons")
     public List<Person> fetchAllPersons() {
         return  graphService.fetchAllPersons();
+    }
+    @GetMapping("/universities")
+    public List<University> fetchAllUniversities(){
+        return graphService.fetchAllUniversities();
+    }
+    @GetMapping("/friendships")
+    public List<Friends> getFriendships() {
+        return graphService.fetchAllFriendships();
+    }
+    @GetMapping("/studentRelationships")
+    public List<StudentOf> getStudentRelationships(){
+        return graphService.fetchAllStudentRelationships();
     }
 }

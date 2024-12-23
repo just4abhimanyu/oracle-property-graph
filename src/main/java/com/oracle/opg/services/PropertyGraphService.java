@@ -1,9 +1,7 @@
 package com.oracle.opg.services;
 
 import com.oracle.opg.dao.OraclePropertyGraphDao;
-import com.oracle.opg.models.Bank;
-import com.oracle.opg.models.Person;
-import com.oracle.opg.models.Vertex;
+import com.oracle.opg.models.*;
 import com.oracle.opg.repositories.GraphRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -37,5 +35,14 @@ public class PropertyGraphService {
     }
     public List<Person> fetchAllPersons() {
         return  graphRepository.getAllPersons();
+    }
+    public List<University> fetchAllUniversities() {
+        return graphRepository.getAllUniversities();
+    }
+    public List<Friends> fetchAllFriendships() {
+        return graphRepository.getAllFriendships();
+    }
+    public List<StudentOf> fetchAllStudentRelationships(){
+        return graphRepository.getAllStudentRelationships();
     }
 }
