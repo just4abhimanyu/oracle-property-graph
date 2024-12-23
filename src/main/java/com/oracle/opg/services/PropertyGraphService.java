@@ -2,47 +2,39 @@ package com.oracle.opg.services;
 
 import com.oracle.opg.dao.OraclePropertyGraphDao;
 import com.oracle.opg.models.*;
-import com.oracle.opg.repositories.GraphRepository;
+import com.oracle.opg.repositories.SQLGraphRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class PropertyGraphService {
 
 
-    private final GraphRepository graphRepository;
+    private final SQLGraphRepository SQLGraphRepository;
 
     private final OraclePropertyGraphDao propertyGraphDao;
 
     @Autowired
-    public PropertyGraphService(OraclePropertyGraphDao propertyGraphDao,GraphRepository graphRepository) {
+    public PropertyGraphService(OraclePropertyGraphDao propertyGraphDao, SQLGraphRepository SQLGraphRepository) {
         this.propertyGraphDao = propertyGraphDao;
-        this.graphRepository = graphRepository;
+        this.SQLGraphRepository = SQLGraphRepository;
     }
     public String checkAutonomousDBConnection() {
-        return graphRepository.testConnection();
+        return SQLGraphRepository.testConnection();
     }
 
-    public List<Vertex> fetchAllVertices(String graphName){
-        return  graphRepository.getAllVertices(graphName);
-    }
     public List<Person> fetchAllPersons() {
-        return  graphRepository.getAllPersons();
+        return  SQLGraphRepository.getAllPersons();
     }
     public List<University> fetchAllUniversities() {
-        return graphRepository.getAllUniversities();
+        return SQLGraphRepository.getAllUniversities();
     }
     public List<Friends> fetchAllFriendships() {
-        return graphRepository.getAllFriendships();
+        return SQLGraphRepository.getAllFriendships();
     }
     public List<StudentOf> fetchAllStudentRelationships(){
-        return graphRepository.getAllStudentRelationships();
+        return SQLGraphRepository.getAllStudentRelationships();
     }
 }

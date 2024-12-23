@@ -1,19 +1,29 @@
 package com.oracle.opg.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.util.Map;
-
+@Entity
 public class Vertex {
-    private String id; // Vertex ID
-    private String label; // Vertex label
-    private Map<String, Object> properties; // Additional properties
 
-    // Getters and setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getLabel() { return label; }
-    public void setLabel(String label) { this.label = label; }
-    public Map<String, Object> getProperties() { return properties; }
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+    @Id
+    private Long id;
+    private String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

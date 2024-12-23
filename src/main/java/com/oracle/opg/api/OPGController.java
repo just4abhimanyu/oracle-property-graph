@@ -20,11 +20,6 @@ public class OPGController {
     public String testDBConnection(){
         return graphService.checkAutonomousDBConnection();
     }
-    @GetMapping("/vertices")
-    public List<Vertex> getAllVertices(@RequestParam String graphName) {
-        System.out.println("------Graph data fetched successfully-----------"+graphName);
-        return graphService.fetchAllVertices(graphName);
-    }
     @GetMapping("/persons")
     public List<Person> fetchAllPersons() {
         return  graphService.fetchAllPersons();
