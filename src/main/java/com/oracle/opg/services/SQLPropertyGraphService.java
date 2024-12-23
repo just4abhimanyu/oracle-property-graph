@@ -6,10 +6,11 @@ import com.oracle.opg.repositories.SQLGraphRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class PropertyGraphService {
+public class SQLPropertyGraphService {
 
 
     private final SQLGraphRepository SQLGraphRepository;
@@ -17,7 +18,7 @@ public class PropertyGraphService {
     private final OraclePropertyGraphDao propertyGraphDao;
 
     @Autowired
-    public PropertyGraphService(OraclePropertyGraphDao propertyGraphDao, SQLGraphRepository SQLGraphRepository) {
+    public SQLPropertyGraphService(OraclePropertyGraphDao propertyGraphDao, SQLGraphRepository SQLGraphRepository) {
         this.propertyGraphDao = propertyGraphDao;
         this.SQLGraphRepository = SQLGraphRepository;
     }
@@ -36,5 +37,8 @@ public class PropertyGraphService {
     }
     public List<StudentOf> fetchAllStudentRelationships(){
         return SQLGraphRepository.getAllStudentRelationships();
+    }
+    public void createSQLPropertyGraph() throws SQLException {
+        SQLGraphRepository.createSQLPropertyGraph();
     }
 }

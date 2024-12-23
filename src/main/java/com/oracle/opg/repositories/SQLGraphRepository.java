@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,32 @@ public class SQLGraphRepository {
         return jdbcTemplate.queryForList(sql, "value");
     }
 
+    public void createSQLPropertyGraph() throws SQLException {
+        String sql = "CREATE PROPERTY GRAPH admin.student_network " +
+                "VERTEX TABLES (" +
+                "\"ADMIN\".\"PERSONS\"" +
+                "  KEY ( \"PERSON_ID\" )" +
+                "  PROPERTIES ( \"BIRTHDATE\", \"NAME\", \"PERSON_ID\" )," +
+                "\"ADMIN\".\"UNIVERSITY\"" +
+                "  KEY ( \"ID\" )" +
+                "  PROPERTIES ( \"NAME\", \"ID\" )" +
+                ")" +
+                "EDGE TABLES (" +
+                "\"ADMIN\".\"FRIENDS\"" +
+                "  KEY ( \"FRIENDSHIP_ID\" )" +
+                "  SOURCE KEY ( \"PERSON_B\" ) REFERENCES \"PERSONS\"(\"PERSON_ID\")" +
+                "  DESTINATION KEY ( \"PERSON_A\" ) REFERENCES \"PERSONS\"(\"PERSON_ID\")" +
+                "  PROPERTIES ( \"FRIENDSHIP_ID\", \"MEETING_DATE\", \"PERSON_A\", \"PERSON_B\" )," +
+                "\"ADMIN\".\"STUDENT_OF\"" +
+                "  KEY ( \"S_ID\" )" +
+                "  SOURCE KEY ( \"S_PERSON_ID\" ) REFERENCES \"PERSONS\"(\"PERSON_ID\")" +
+                "  DESTINATION KEY ( \"S_UNIV_ID\" ) REFERENCES \"UNIVERSITY\"(\"ID\")" +
+                "  PROPERTIES ( \"SUBJECT\", \"S_ID\", \"S_PERSON_ID\", \"S_UNIV_ID\" )" +
+                ")" +
+                "OPTIONS( TRUSTED MODE, DISALLOW MIXED PROPERTY TYPES )";
 
+        jdbcTemplate.execute(sql);
+    }
 
 }
 
