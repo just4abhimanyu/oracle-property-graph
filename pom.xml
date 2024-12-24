@@ -55,11 +55,18 @@
 			<artifactId>ojdbc11</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.oracle.database.graph/pgx-api -->
 		<dependency>
 			<groupId>com.oracle.database.graph</groupId>
-			<artifactId>opg-client</artifactId>
-			<version>22.4.0</version>
+			<artifactId>pgx-api</artifactId>
+			<version>24.4.0</version>
 		</dependency>
+
+		<!--		<dependency>-->
+<!--			<groupId>com.oracle.database.graph</groupId>-->
+<!--			<artifactId>opg-client</artifactId>-->
+<!--			<version>22.4.0</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

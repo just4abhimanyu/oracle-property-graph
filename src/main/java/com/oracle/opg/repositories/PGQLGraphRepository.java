@@ -1,15 +1,20 @@
 package com.oracle.opg.repositories;
 
 import com.oracle.opg.models.Vertex;
+import oracle.pgql.lang.PgqlException;
+import oracle.pgx.api.Pgx;
+import oracle.pgx.api.PgxGraph;
+import oracle.pgx.api.PgxSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
+import oracle.pgx.api.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Repository
@@ -31,18 +36,26 @@ public class PGQLGraphRepository  {
         // Get edge tables from the database
         List<String> edgeTables = getEdgeTables();
 
-        String sql = "CREATE PROPERTY GRAPH " + pgViewName + " " +
-                "VERTEX TABLES (" +
-                vertexTables.stream()
-                        .map(table -> "\"ADMIN\".\"" + table + "\"")
-                        .collect(Collectors.joining(", ")) +
-                ") " +
-                "EDGE TABLES (" +
-                edgeTables.stream()
-                        .map(table -> "\"ADMIN\".\"" + table + "\"")
-                        .collect(Collectors.joining(", ")) +
-                ") " +
-                "OPTIONS( TRUSTED MODE, DISALLOW MIXED PROPERTY TYPES )";
+        String sql = "CREATE PROPERTY GRAPH admin.student_network_pgql\n" +
+                "  VERTEX TABLES (\n" +
+                "    \"ADMIN\".\"PERSONS\"\n" +
+                "      KEY ( \"PERSON_ID\" )\n" +
+                "      PROPERTIES ( \"BIRTHDATE\", \"NAME\", \"PERSON_ID\" ),\n" +
+                "    \"ADMIN\".\"UNIVERSITY\"\n" +
+                "      KEY ( \"ID\" )\n" +
+                "      PROPERTIES ( \"NAME\", \"ID\" )\n" +
+                "  )\n" +
+                "  EDGE TABLES (\n" +
+                "    \"ADMIN\".\"FRIENDS\" KEY ( \"FRIENDSHIP_ID\" )\n" +
+                "      SOURCE KEY ( \"PERSON_B\" ) REFERENCES \"PERSONS\"( \"PERSON_ID\" )\n" +
+                "      DESTINATION KEY ( \"PERSON_A\" ) REFERENCES \"PERSONS\"( \"PERSON_ID\" )\n" +
+                "      PROPERTIES ( \"FRIENDSHIP_ID\", \"MEETING_DATE\", \"PERSON_A\", \"PERSON_B\" ),\n" +
+                "    \"ADMIN\".\"STUDENT_OF\" KEY ( \"S_ID\" )\n" +
+                "      SOURCE KEY ( \"S_PERSON_ID\" ) REFERENCES \"PERSONS\"( \"PERSON_ID\" )\n" +
+                "      DESTINATION KEY ( \"S_UNIV_ID\" ) REFERENCES \"UNIVERSITY\"( \"ID\" )\n" +
+                "      PROPERTIES ( \"SUBJECT\", \"S_ID\", \"S_PERSON_ID\", \"S_UNIV_ID\" )\n" +
+                "  )\n" +
+                "  OPTIONS( TRUSTED MODE, DISALLOW MIXED PROPERTY TYPES )\n";
         System.out.println("PGQL query -->\n"+sql);
         jdbcTemplate.execute(sql);
     }
@@ -63,9 +76,38 @@ public class PGQLGraphRepository  {
                 .collect(Collectors.toList());
     }
 
-//    @Query(value = "MATCH (v1)-[r:FRIEND*3]->(v2) RETURN v2", nativeQuery = true)
-//    List<Vertex> findFriendOfFriendOfFriend(Long startId);
+    public PgqlResultSet findFriendsByName(String name){
+        String pgql = "SELECT friend.name \n" +
+                "FROM MATCH All (p:Persons) -[:FRIENDS]-> (friend:Persons) ON student_network_pgql\n" +
+                "where p.name='"+name+"'";
+        return executePGQLQuery(pgql);
+    }
+    public void findFriendOfFriends() throws SQLException {
+        String pgql = "MATCH (p1:Persons)-[:FRIENDS*2..3]-(p3:Persons)\n" +
+                "RETURN p1.name AS person1, p3.name AS person3, COUNT(*) AS connections";
+
+        // Execute the PGQL query
+        List<Map<String, Object>> results = jdbcTemplate.queryForList(pgql);
+
+        // Process the results
+        for (Map<String, Object> row : results) {
+            System.out.println("Person 1: " + row.get("person1"));
+            System.out.println("Person 3: " + row.get("person3"));
+            System.out.println("Connections: " + row.get("connections"));
+            System.out.println();
+        }
+    }
+    private PgqlResultSet executePGQLQuery(String pgqlQuery){
 
 
+        try (PgxSession session = Pgx.createSession("my-session")) {
+            PgxGraph graph = session.getGraph("student_network_pgql");
 
+            return graph.queryPgql(pgqlQuery);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
