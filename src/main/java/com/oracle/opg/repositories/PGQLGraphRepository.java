@@ -78,7 +78,7 @@ public class PGQLGraphRepository  {
 
     public PgqlResultSet findFriendsByName(String name){
         String pgql = "SELECT friend.name \n" +
-                "FROM MATCH All (p:Persons) -[:FRIENDS]-> (friend:Persons) ON student_network_pgql\n" +
+                "FROM MATCH All (p:Persons) -[:FRIENDS]-> {3}(friend:Persons) ON student_network_pgql\n" +
                 "where p.name='"+name+"'";
         return executePGQLQuery(pgql);
     }

@@ -27,7 +27,6 @@ public class PGQLPropertyGraphService{
         pgqlGraphRepository.findFriendOfFriends();
     }
     public Map<String,List<String>> findFriendsByName(String name){
-        //List<Map<String, Object>> friends =
         Map<String,List<String>> friendList = new HashMap<>();
          friendList.put(name,parseFriendList(pgqlGraphRepository.findFriendsByName(name)));
     return friendList;
